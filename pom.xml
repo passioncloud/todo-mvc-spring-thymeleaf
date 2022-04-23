@@ -62,6 +62,13 @@
             <version>2.4.1</version>
         </dependency>
 
+<!--        htmx -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>htmx.org</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
