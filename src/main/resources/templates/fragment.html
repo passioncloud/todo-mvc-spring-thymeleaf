@@ -1,0 +1,10 @@
+<html xmlns:th="http://www.thymeleaf.org" >
+<li th:fragment="x(item)">
+    <div class="view">
+        <input class="toggle" type="checkbox" th:checked="${item.isCompleted}">
+        <label th:text="${item.title}">Taste this</label>
+        <button class="destroy"></button>
+    </div>
+    <input class="edit" value ="Create a TODO" >
+</li>
+</html>

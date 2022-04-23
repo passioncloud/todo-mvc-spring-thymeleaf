@@ -16,7 +16,14 @@
 <section class="todoapp">
     <header class="header">
         <h1>todos</h1>
-        <input class="new-todo" placeholder="What needs to be done?" autofocus/>
+        <form th:action="@{/}" method="post" th:object="${item}">
+            <input
+                    class="new-todo"
+                    placeholder="What needs to be done?"
+                    autofocus
+                    th:field="*{title}"
+            />
+        </form>
     </header>
     <!--            This section should be hidden be default -->
     <!--            and only shown when there are todos -->
@@ -24,24 +31,13 @@
         <input id="toggle-all" class="toggle-all" type="checkbox"/>
         <label for="toggle-all">Mark all completed</label>
         <ul class="todo-list">
-            <li class="completed">
-                <div class="view">
-                    <input class="toggle" type="checkbox" checked>
-                    <label>Taste JavaScript</label>
-                    <button class="destroy"></button>
-                </div>
-                <input class="edit" value="Create a Todo template">
-            </li>
-            <li class="completed">
-                <div class="view">
-                    <input class="toggle" type="checkbox" checked>
-                    <label>Drink chocolate</label>
-                    <button class="destroy"></button>
-                </div>
-                <input class="edit" value="Drink, righ">
+            <!-- fragment is a template, fragment.html -->
+            <li th:insert="fragment :: x(${item})"
+                th:each="item : ${todos}">
             </li>
         </ul>
     </section>
+
     <!--            Footer should only be shown when there are todos -->
     <footer class="footer" th:if="${someItemsPresent}">
         <!--                by default should be `0 items left` -->
