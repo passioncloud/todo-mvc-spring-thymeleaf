@@ -31,9 +31,11 @@
         <input id="toggle-all" class="toggle-all" type="checkbox"/>
         <label for="toggle-all">Mark all completed</label>
         <ul class="todo-list">
-            <!-- fragment is a template, fragment.html -->
-            <li th:insert="fragment :: x(${item})"
-                th:each="item : ${todos}">
+            <!-- fragment is a template, frag_todo.html -->
+            <li th:insert="frag_todo :: frag_todo(${item})"
+                th:each="item : ${todos}"
+                th:remove="tag"
+            >
             </li>
         </ul>
     </section>
@@ -41,19 +43,34 @@
     <!--            Footer should only be shown when there are todos -->
     <footer class="footer" th:if="${someItemsPresent}">
         <!--                by default should be `0 items left` -->
-        <span class="todo-count"><strong>0</strong> item left</span>
-        <ul class="filters">
-            <li>
-                <a class="selected" href="#/">All</a>
-            </li>
-            <li>
-                <a href="#/active">Active</a>
-            </li>
-            <li>
-                <a href="#/completed">Completed</a>
-            </li>
-        </ul>
-        <button class="clear-completed">Clear completed</button>
+        <th:block th:unless="${incompleteTodoItemCount == 0}">
+             <span
+                     class="todo-count">
+                <strong th:text="${incompleteTodoItemCount}"></strong>
+                <strong> / </strong>
+                <strong th:text="${todoItemCount}"></strong>
+                items left
+            </span>
+        </th:block>
+        <th:block th:if="${incompleteTodoItemCount==0}">
+            <span class="todo-count">No item left</span>
+        </th:block>
+        <div
+                th:insert="frag_filters :: frag_filters(${listFilter})"
+                th:remove="tag">
+        </div>
+
+        <form
+            th:action="@{/completed}"
+            th:method="delete"
+            th:if="${someCompletedTodosPresent}"
+            >
+            <button
+                class="clear-completed"
+                >
+                Clear completed
+            </button>
+        </form>
     </footer>
 </section>
 

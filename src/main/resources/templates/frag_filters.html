@@ -1,0 +1,27 @@
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        lang="en">
+
+<ul
+        th:fragment="frag_filters(listFilter)"
+        class="filters">
+    <li>
+        <a
+                th:classappend="${listFilter == listFilter.ALL ? 'selected': ''}"
+                href="/">All
+        </a>
+    </li>
+    <li>
+        <a
+                th:classappend="${listFilter == listFilter.INCOMPLETE ? 'selected': ''}"
+                href="/incomplete">Incomplete
+        </a>
+    </li>
+    <li>
+        <a
+                th:classappend="${listFilter == listFilter.COMPLETED ? 'selected': ''}"
+                href="/completed">Completed
+        </a>
+    </li>
+</ul>

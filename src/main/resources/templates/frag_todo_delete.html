@@ -1,0 +1,15 @@
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        lang="en">
+<div
+        th:fragment="frag_todo_del(item)"
+>
+    <form
+            th:action="@{/{id}(id=${item.id})}"
+            th:method="delete"
+    >
+        <button class="destroy"></button>
+    </form>
+</div>
+</html>
