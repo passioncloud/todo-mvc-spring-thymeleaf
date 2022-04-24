@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
@@ -74,14 +75,13 @@ public class TodoItemController {
     }
 
 
-
-    @PostMapping
-    public String addNewTodoItem(@Valid @ModelAttribute("item") TodoItemFormData todoItemFormData) {
-        var todoItem = new TodoItem();
-        todoItem.setTitle(todoItemFormData.getTitle());
-        todoItemRepository.save(todoItem);
-        return "redirect:/";
-    }
+//    @PostMapping
+//    public String addNewTodoItem(@Valid @ModelAttribute("item") TodoItemFormData todoItemFormData) {
+//        var todoItem = new TodoItem();
+//        todoItem.setTitle(todoItemFormData.getTitle());
+//        todoItemRepository.save(todoItem);
+//        return "redirect:/";
+//    }
 
     @PutMapping("/{id}/toggle")
     public String toggleSelection(@PathVariable("id") Long id) {
@@ -101,6 +101,48 @@ public class TodoItemController {
     public String deleteCompletedTodoItems() {
         todoItemRepository.deleteAll(todoItemRepository.findAllByCompleted(true));
         return "redirect:/";
+    }
+
+    @PostMapping(headers = "HX-Request")
+    public String htmxAddTodoItem(
+            TodoItemFormData formData,
+            Model model,
+            HttpServletResponse response) {
+        System.out.println("HX-Request made to add an item with title: " + formData.getTitle());
+        TodoItem todoItem = new TodoItem();
+        todoItem.setTitle(formData.getTitle());
+        todoItem = todoItemRepository.save(todoItem);
+        model.addAttribute("item", TodoItemDto.fromTodoItem(todoItem));
+        response.setHeader("HX-Trigger", "itemAdded");
+        return "frag_todo :: frag_todo";
+    }
+
+    @GetMapping(path = "/items-count", headers="HX-Request")
+    public String htmxTodoItemCount(Model model) {
+        model.addAttribute("incompleteTodoItemCount", todoItemRepository.countAllByCompleted(false));
+        model.addAttribute("todoItemCount", todoItemRepository.count());
+        return "frag_count :: active_item_count";
+    }
+
+    @PutMapping(value="/{id}/toggle", headers="HX-Request")
+    public String htmxToggleTodoItem(@PathVariable("id") Long id,
+                                     Model model,
+                                     HttpServletResponse response) {
+        TodoItem todoItem = todoItemRepository.getById(id);
+        todoItem.setCompleted(!todoItem.isCompleted());
+        todoItem = todoItemRepository.save(todoItem);
+        model.addAttribute("item", TodoItemDto.fromTodoItem(todoItem));
+        response.setHeader("HX-Trigger", "itemCompletionToggled");
+        return "frag_todo :: frag_todo";
+    }
+
+    @DeleteMapping(value="/{id}", headers = "HX-Request")
+    public String htmxDeleteTodoItem(
+            @PathVariable("id") Long id,
+            HttpServletResponse response) {
+        todoItemRepository.deleteById(id);
+        response.setHeader("HX-Trigger", "itemDeleted");
+        return "_blank :: _blank";
     }
 }
 

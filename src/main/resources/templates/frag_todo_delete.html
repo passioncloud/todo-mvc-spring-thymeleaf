@@ -3,13 +3,12 @@
         xmlns:th="http://www.thymeleaf.org"
         lang="en">
 <div
+        th:id="|delete-div-${item.id}|"
         th:fragment="frag_todo_del(item)"
->
-    <form
-            th:action="@{/{id}(id=${item.id})}"
-            th:method="delete"
-    >
-        <button class="destroy"></button>
-    </form>
+        <button
+                class="destroy"
+                th:attr="hx-delete=@{/{id}(id=${item.id})} , hx-target=@{|#list-item-${item.id}|}"
+                hx-swap="outerHTML"
+        ></button>
 </div>
 </html>

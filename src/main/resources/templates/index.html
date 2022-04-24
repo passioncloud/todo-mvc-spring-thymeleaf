@@ -12,25 +12,34 @@
 </head>
 
 <body>
-<section class="todoapp" hx-boost="true">
+<section
+        class="todoapp"
+>
     <header class="header">
         <h1>todos</h1>
-        <form th:action="@{/}" method="post" th:object="${item}">
-            <input
-                    class="new-todo"
-                    placeholder="What needs to be done?"
-                    autofocus
-                    th:field="*{title}"
-            />
-        </form>
+        <input
+                id="new-todo-input"
+                class="new-todo"
+                placeholder="What needs to be done?"
+                autofocus
+                th:field="*{item.title}"
+                hx-target="#todo-list"
+                hx-swap="beforeend"
+                hx-post="/"
+                hx-trigger="keyup[key=='Enter']"
+        />
     </header>
-    <!--            This section should be hidden be default -->
-    <!--            and only shown when there are todos -->
-    <section class="main" th:if="${someItemsPresent}">
+    <section
+            id="main-section"
+            class="main"
+            th:classappend="${! someItemsPresent ? 'hidden' : ''}"
+    >
         <input id="toggle-all" class="toggle-all" type="checkbox"/>
         <label for="toggle-all">Mark all completed</label>
-        <ul class="todo-list">
-            <!-- fragment is a template, frag_todo.html -->
+        <ul
+                class="todo-list"
+                id="todo-list"
+        >
             <li th:insert="frag_todo :: frag_todo(${item})"
                 th:each="item : ${todos}"
                 th:remove="tag"
@@ -39,34 +48,28 @@
         </ul>
     </section>
 
-    <!--            Footer should only be shown when there are todos -->
-    <footer class="footer" th:if="${someItemsPresent}">
-        <!--                by default should be `0 items left` -->
-        <th:block th:unless="${incompleteTodoItemCount == 0}">
-             <span
-                     class="todo-count">
-                <strong th:text="${incompleteTodoItemCount}"></strong>
-                <strong> / </strong>
-                <strong th:text="${todoItemCount}"></strong>
-                items left
-            </span>
-        </th:block>
-        <th:block th:if="${incompleteTodoItemCount==0}">
-            <span class="todo-count">No item left</span>
-        </th:block>
+    <footer
+            id="actions-footer"
+            class="footer"
+            th:classappend="${! someItemsPresent ? 'hidden' : ''}"
+    >
+        <div
+                th:replace="frag_count :: active_item_count()"
+        >
+        </div>
         <div
                 th:insert="frag_filters :: frag_filters(${listFilter})"
                 th:remove="tag">
         </div>
 
         <form
-            th:action="@{/completed}"
-            th:method="delete"
-            th:if="${someCompletedTodosPresent}"
-            >
+                th:action="@{/completed}"
+                th:method="delete"
+                th:if="${someCompletedTodosPresent}"
+        >
             <button
-                class="clear-completed"
-                >
+                    class="clear-completed"
+            >
                 Clear completed
             </button>
         </form>
@@ -77,6 +80,25 @@
     <p>Double click to edit a todo</p>
 </footer>
 <script type="text/javascript" th:src="@{/webjars/htmx.org/dist/htmx.min.js}"></script>
+<script>
+    htmx.on("#new-todo-input", 'htmx:afterRequest', function (evt) {
+        evt.detail.elt.value = '';
+    });
 
+    // add main section if item is added for first time
+    htmx.on('htmx:afterSwap', function (evt) {
+        console.log('htmx after swap. event is', evt);
+        const items = document.querySelectorAll('#todo-list li');
+        const mainSection = document.querySelector('#main-section');
+        const actionsFooter = document.querySelector('#actions-footer');
+        if (items.length === 0) {
+            mainSection.classList.add('hidden');
+            actionsFooter.classList.add('hidden');
+        } else {
+            mainSection.classList.remove('hidden');
+            actionsFooter.classList.remove('hidden');
+        }
+    })
+</script>
 </body>
 </html>

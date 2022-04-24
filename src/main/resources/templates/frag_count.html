@@ -1,0 +1,24 @@
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        lang="en">
+<span
+        th:fragment="active_item_count()"
+        id="active-items-count"
+        hx-get="/items-count"
+        hx-trigger="itemAdded from:body, itemCompletionToggled from:body, itemDeleted from:body"
+        hx-swap="outerHTML"
+>
+<th:block th:unless="${incompleteTodoItemCount == 0}">
+             <span
+                     class="todo-count">
+                <strong th:text="${incompleteTodoItemCount}"></strong>
+                <strong> / </strong>
+                <strong th:text="${todoItemCount}"></strong>
+                items left
+            </span>
+</th:block>
+<th:block th:if="${incompleteTodoItemCount==0}">
+    <span class="todo-count">No item left</span>
+</th:block>
+</span>

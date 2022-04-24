@@ -5,20 +5,19 @@
 <li
         th:fragment="frag_todo(item)"
         th:classappend="${item.isCompleted ? 'completed' : '' }"
+        th:id="|list-item-${item.id}|"
 >
     <div class="view">
-        <form
-                th:action="@{/{id}/toggle(id=${item.id})}"
-                th:method="put"
+        <input
+                th:id="|toggle-checkbox-${item.id}|"
+                class="toggle"
+                type="checkbox"
+                th:attrappend="checked=${item.isCompleted ? true : null }"
+                th:attr="hx-put=@{/{id}/toggle(id=${item.id})} , hx-target=|#list-item-${item.id}|"
+                hx-trigger="click"
+                hx-swap="outerHTML"
         >
-            <input
-                    class="toggle"
-                    type="checkbox"
-                    th:attrappend="checked=${item.isCompleted ? true : null }"
-                    onchange="this.form.submit()"
-            >
-            <label th:text="${item.title}"></label>
-        </form>
+        <label th:text="${item.title}"></label>
         <div
                 th:insert="frag_todo_delete :: frag_todo_del(${item})"
                 th:remove="tag"
